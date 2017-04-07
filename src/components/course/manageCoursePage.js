@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as courseActions from '../../actions/courseAction';
-import { CourseForm } from './courseForm';
+import CourseForm from './courseForm';
 import toastr  from 'toastr';
 
 class ManageCoursePage extends React.Component {
@@ -16,8 +16,8 @@ class ManageCoursePage extends React.Component {
       errors: {}
     };
 
-    this.onChange = this.onChange.bind(this);
-    this.onSave = this.onSave.bind(this);
+    this.handleChange  = this.handleChange .bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentWillReceiveProps(nextProps){
@@ -30,7 +30,7 @@ class ManageCoursePage extends React.Component {
     }
   }
 
-  onSave(event){
+  handleSubmit(event){
     this.setState({saving: true});
     event.preventDefault();
     this.props.actions.saveCourse(this.state.course).then(()=>{
@@ -47,11 +47,13 @@ class ManageCoursePage extends React.Component {
      this.context.router.push('/courses');
   }
 
-  onChange(event){
-    const field = event.target.name;
-    let course = this.state.course;
-    course[field] = event.target.value;
-    return this.setState({course: course});
+  handleChange (event){
+    if(event && event.target){
+      const field = event.target.name;
+      let course = this.state.course;
+      course[field] = event.target.value;
+      return this.setState({course: course});
+    }
   }
 
   render() {
@@ -59,9 +61,10 @@ class ManageCoursePage extends React.Component {
      <CourseForm
        allAuthors={this.state.authors}
        loading = {this.state.saving}
-       onSave={this.onSave}
-       onChange={this.onChange}
+       onSubmit={this.handleSubmit}
+       onChange={this.handleChange}
        course={this.state.course}
+       authors={this.state.authors}
        errors={this.state.errors}
      />
     );
@@ -105,8 +108,8 @@ function mapStateToProps(state, ownProps) {
 
   const authorFormat = state.authors.map((author)=>{// reformating of data
     return {
-      value: author.id,
-      text: author.firstName+ ' '+ author.lastName
+      id: author.id,
+      value: author.firstName+ ' '+ author.lastName
     };
   });
 

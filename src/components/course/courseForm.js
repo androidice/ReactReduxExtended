@@ -1,61 +1,94 @@
-import React from 'react';
-import { SelectInput } from '../common/selectInput';
-import { TextInput } from '../common/textInput';
+import React, { PropTypes } from 'react';
+import { Field, reduxForm } from 'redux-form';
 
-export const CourseForm = ({course, allAuthors, onSave, onChange, loading, errors})=> {
+const validate = (values)=>{
+  console.log('values', values);
+  const errors = {};
+  if (!values.title) {
+    errors.title = 'Required';
+  }
+  if(!values.length) {
+    errors.length = 'Required';
+  }else if(!/(\d(:\d)*)/g.test(values.length)) {
+    errors.length = 'Invalid Length';
+  }
+  return errors;
+};
+
+const renderField = ({ input, label, required, placeholder, type, value, meta: { touched, error, warning } }) => (
+  <div>
+    <label>{label}</label>
+    <div>
+      <input {...input} placeholder={placeholder} type={type} value={value}/> {required && <span>*</span>}
+      {touched && ((error && <span className="error">{error}</span>) || (warning && <span>{warning}</span>))}
+    </div>
+  </div>
+);
+
+const renderSelectField = ({ input, label, required, defaultOption, options, value, meta: { touched, error, warning } }) => (
+  <div>
+    <label>{label}</label>
+    <div>
+      <select {...input} value={value}>
+        <option value="">{defaultOption}</option>
+        {options.map((option)=>{
+          return <option key={option.id} value={option.id}>{option.value}</option>;
+        })}
+      </select>
+      {required && <span>*</span>}
+    </div>
+  </div>
+);
+
+let CourseForm = (props)=> {
+  const { course,authors, onChange, onSubmit} = props;
+  console.log('props', props);
   return (
-    <form>
-      <h1>Manage Course</h1>
-      <TextInput
-      name="title"
-      label="Title"
-      value={course.title}
-      onChange={onChange}
-      error={errors.title}
-      />
-
-      <SelectInput
-        name="authorId"
-        label="Author"
-        value={course.authorId}
-        defaultOption="Select Author"
-        options={allAuthors}
-        onChange={onChange}
-        error={errors.authorId}
-      />
-
-      <TextInput
-        name="category"
-        label="Category"
-        value={course.category}
-        onChange={onChange}
-        error={errors.category}
-      />
-
-      <TextInput
-        name="length"
-        label="Length"
-        value={course.length}
-        onChange={onChange}
-        error={errors.length}
-      />
-
-      <input
-        type="submit"
-        disabled={loading}
-        value={loading? 'Saving...': 'Save'}
-        className="btn btn-primary"
-        onClick={onSave}
-      />
+    <form onSubmit={onSubmit}>
+      <Field name="title"
+             component={renderField}
+             value={course.title}
+             type="text"
+             label="Course"
+             placeholder="Course"
+             required="required"
+             onChange={onChange}/>
+      <Field name="authorId"
+             component={renderSelectField}
+             options={authors}
+             value={course.authorId}
+             defaultOption="Select here..."
+             label="Authors"/>
+      <Field name="category"
+             component={renderField}
+             value={course.category}
+             type="text"
+             label="Category"
+             placeholder="Category"
+             onChange={onChange}/>
+      <Field name="length"
+             component={renderField}
+             value={course.length}
+             type="text"
+             label="Length"
+             placeholder="Length"
+             required="required"
+             onChange={onChange}/>
+      <button type="submit" disabled={!props.valid}>Save</button>
     </form>
   );
 };
 
 CourseForm.propTypes = {
-  course: React.PropTypes.object.isRequired,
-  allAuthors: React.PropTypes.array.isRequired,
-  onSave: React.PropTypes.func.isRequired,
-  onChange: React.PropTypes.func.isRequired,
-  loading:  React.PropTypes.bool,
-  errors: React.PropTypes.object
+  course: PropTypes.object.isRequired,
+  authors: PropTypes.array.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired
 };
+
+CourseForm = reduxForm({
+  form: 'courseForm',
+  validate
+})(CourseForm);
+
+export default CourseForm;
