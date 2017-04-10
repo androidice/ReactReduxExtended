@@ -49,17 +49,17 @@ const renderSelectField = ({ input, label, required, defaultOption, options }) =
 };
 
 let CourseForm = (props) => {
-  const { course, authors, onChange, onSubmit } = props;
+  console.log('props', props);
+  const { course, authors, onSubmit, handleSubmit } = props;
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Field name="title"
              component={renderField}
              value={course.title}
              type="text"
              label="Course"
              placeholder="Course"
-             required="required"
-             onChange={onChange}/>
+             required="required"/>
       <Field name="authorId"
              component={renderSelectField}
              options={authors}
@@ -71,16 +71,14 @@ let CourseForm = (props) => {
              value={course.category}
              type="text"
              label="Category"
-             placeholder="Category"
-             onChange={onChange}/>
+             placeholder="Category"/>
       <Field name="length"
              component={renderField}
              value={course.length}
              type="text"
              label="Length"
              placeholder="Length"
-             required="required"
-             onChange={onChange}/>
+             required="required"/>
       <button type="submit" disabled={!props.valid}>Save</button>
     </form>
   );
@@ -89,7 +87,7 @@ let CourseForm = (props) => {
 CourseForm.propTypes = {
   course: PropTypes.object.isRequired,
   authors: PropTypes.array.isRequired,
-  onChange: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired
 };
 

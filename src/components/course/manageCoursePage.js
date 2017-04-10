@@ -15,8 +15,6 @@ class ManageCoursePage extends React.Component {
       saving: false,
       errors: {}
     };
-
-    this.handleChange  = this.handleChange .bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -30,10 +28,11 @@ class ManageCoursePage extends React.Component {
     }
   }
 
-  handleSubmit(event){
+  handleSubmit(values) {
     this.setState({saving: true});
     event.preventDefault();
-    this.props.actions.saveCourse(this.state.course).then(()=>{
+    console.log('course',values);
+    this.props.actions.saveCourse(values).then(()=>{
        this.redirect();
     }).catch((error)=>{
       this.setState({saving: false});
@@ -47,22 +46,12 @@ class ManageCoursePage extends React.Component {
      this.context.router.push('/courses');
   }
 
-  handleChange (event){
-    if(event && event.target){
-      const field = event.target.name;
-      let course = this.state.course;
-      course[field] = event.target.value;
-      return this.setState({course: course});
-    }
-  }
-
   render() {
     return (
      <CourseForm
        allAuthors={this.state.authors}
        loading = {this.state.saving}
        onSubmit={this.handleSubmit}
-       onChange={this.handleChange}
        course={this.state.course}
        authors={this.state.authors}
        errors={this.state.errors}
@@ -73,7 +62,7 @@ class ManageCoursePage extends React.Component {
 
 function getCourseById(courses, courseId){
   let course = {
-    id: '',
+    id: undefined,
     title: '',
     watchHref: '',
     authorId: '',
