@@ -49,7 +49,6 @@ const renderSelectField = ({ input, label, required, defaultOption, options }) =
 };
 
 let CourseForm = (props) => {
-  console.log('props', props);
   const { course, authors, onSubmit, handleSubmit } = props;
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
